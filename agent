@@ -1,0 +1,432 @@
+# Cartão de aplicativo: GitHub Copilot Agents
+
+Saiba como usar os recursos agênticos do GitHub Copilot de forma responsável, compreendendo suas finalidades, capacidades e limitações.
+
+## O que é um Cartão de Aplicação?
+
+<!-- Do not modify this text.-->
+
+GitHub’s application and platform cards are intended to help you understand how our AI technology works, the choices application owners can make that influence application performance and behavior, and the importance of considering the whole application, including the technology, the people, and the environment. Application cards are created for AI applications and platform cards are created for AI platform services. These resources can support the development or deployment of your own applications and can be shared with users or stakeholders impacted by them.
+
+As part of its commitment to responsible AI, GitHub adheres to Microsoft's [six core principles](https://www.microsoft.com/en-us/ai/principles-and-approach/?msockid=3da790040c776d6f2b5485e40de56c06#ai-principles): fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability. These principles are embedded in the [Responsible AI Standard](https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/final/en-us/microsoft-brand/documents/Microsoft-Responsible-AI-Standard-General-Requirements.pdf?culture=en-us\&country=us), which guides teams in designing, building, and testing AI applications. Application and Platform Cards play a key role in operationalizing these principles by offering transparency around capabilities, intended uses, and limitations. For further insight, readers are encouraged to explore Microsoft’s [Responsible AI Transparency Report](https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/msc/documents/presentations/CSR/Responsible-AI-Transparency-Report-2025-vertical.pdf) and [Termos do GitHub](/pt/site-policy/github-terms).
+
+## 1. Visão geral
+
+GitHub Copilot inclui vários recursos agente que vão além da sugestão e da conversa, eles podem examinar o código, tomar medidas em seu nome e criar aplicativos. Este cartão aborda as seguintes experiências:
+
+* **Revisão de código do Copilot**: Revisa os diffs de pull requests e os metadados no GitHub.com, gerando comentários de feedback e alterações sugeridas.
+
+* ```
+            **Agente de nuvem do Copilot**: um agente assíncrono em GitHub.com capaz de criar ramificações, escrever código e abrir solicitações de pull em resposta a problemas atribuídos. O agente de nuvem é executado em um ambiente efêmero com firewall com verificação de segurança automatizada.
+  ```
+
+* **Copilot CLI**: uma ferramenta de linha de comando que pode criar e modificar arquivos, executar comandos e executar tarefas de várias etapas. Todas as ações exigem prompts de permissão explícitos e têm como escopo o diretório atual.
+
+* **Copilot SDK**: uma biblioteca programática que permite aos desenvolvedores criar aplicativos personalizados alimentados por IA usando Copilot. O SDK se comunica com Copilot CLI por JSON-RPC e dá suporte a agentes personalizados, integrações de servidor MCP, ganchos de ciclo de vida e gerenciamento de sessão.
+
+* **aplicativo GitHub Copilot**: Um aplicativo de desktop para gerenciar sessões de agentes em repositórios locais, worktrees do Git e sandboxes em nuvem. O aplicativo usa CLI do GitHub Copilot e SDK do GitHub Copilot como base e adiciona uma interface de usuário para sessões paralelas, chats rápidos, fluxos de trabalho de solicitações de pull e problemas de GitHub, automações e telas.
+
+* **GitHub Spark (versão prévia)**: uma experiência gerenciada de criação de aplicativo em que um agente grava código e executa comandos em um ambiente de desenvolvimento. O Spark fornece um runtime gerenciado e pode adicionar recursos de inferência por meio do SDK GitHub Models.
+
+Esses recursos compartilham princípios comuns, supervisão humana, revisão de saídas e uso responsável, mas diferem em seus ambientes de execução, permissões e fluxos de dados. As seções abaixo descrevem cada experiência no contexto.
+
+## 2. Termos-chave
+
+A lista a seguir fornece um glossário de termos-chave relacionados aos Agentes GitHub Copilot:
+
+* **Sugestão de código**: Uma alteração específica no código proposta pela revisão de código do Copilot como parte de seu feedback em um pull request. As sugestões de código são apresentadas como alterações sugeridas que podem ser aplicadas com alguns cliques.
+
+* **Filtragem de conteúdo**: um sistema de segurança que verifica solicitações e respostas para detectar e bloquear conteúdo prejudicial, ofensivo ou inseguro antes de ser mostrado ao usuário.
+
+* **Instruções personalizadas**: descrições em linguagem natural do estilo de codificação e das práticas recomendadas que um mantenedor de repositório pode configurar para orientar os comentários da revisão de código do Copilot. Instruções personalizadas ajudam Copilot entender as convenções e os padrões de uma base de código específica.
+
+* **Alucinação**: um fenômeno em que um modelo de linguagem gera uma saída que soa plausível, mas que é factualmente incorreta, sem suporte pelo contexto fornecido ou totalmente fabricada. Na revisão de código, a alucinação pode se manifestar como comentários que realçam problemas que não existem ou se baseiam em mal-entendidos do código.
+
+* **LLM (modelo de linguagem grande)**: um tipo de rede neural treinada em um grande corpo de dados de texto que pode gerar, analisar e transformar linguagem natural e código. Agentes do Copilot usam um ou mais LLMs para processar o contexto e produzir respostas.
+
+* **Ambiente de desenvolvimento efêmero**: um ambiente de computação temporário e isolado criado para cada sessão do agente de nuvem. O ambiente é destruído após o término da sessão, garantindo que nenhum estado persista entre as execuções.
+
+* **Firewall**: um controle de nível de rede habilitado por padrão para o agente de nuvem que impede conexões de saída com hosts não autorizados, protegendo contra exfiltração acidental ou mal-intencionada de código ou dados.
+
+* **Crédito de IA**: Unidade de consumo para recursos do Copilot. Cada uso da revisão de código do Copilot consome créditos de IA.
+
+* **Permission prompt**: uma etapa de confirmação interativa na CLI Copilot que solicita ao usuário que aprove uma ação, como modificar um arquivo, executar um comando ou acessar arquivos fora do diretório atual, antes que o agente continue. Os prompts de permissões são um mecanismo essencial de segurança para a execução local de agentes.
+
+* **Copilot SDK**: uma biblioteca programática (`@github/copilot-sdk`) que permite que os desenvolvedores criem aplicativos personalizados alimentados por IA criando sessões, enviando prompts e recebendo respostas de streaming de Copilot. O SDK se comunica com Copilot CLI por JSON-RPC.
+
+* **JSON-RPC**: o protocolo de comunicação usado entre o SDK Copilot e a CLI Copilot. O SDK envia solicitações estruturadas para o processo da CLI, que manipula a interação do modelo e a execução da ferramenta.
+
+* **Agente personalizado (SDK)**: uma configuração de agente com nome no SDK que tem seu próprio prompt de sistema, ferramentas delimitadas ao seu escopo e servidores MCP opcionais. O runtime do SDK pode delegar automaticamente a sub-agentes com base na intenção do usuário.
+
+* ```
+            **Ganchos (SDK)**: retornos de chamada de ciclo de vida no SDK do Copilot que permitem aos desenvolvedores injetar lógica personalizada em pontos específicos durante uma sessão, como antes ou depois do uso de ferramentas, no início ou no fim da sessão e no erro.
+  ```
+
+* **Managed runtime**: o ambiente de hospedagem totalmente gerenciado fornecido pelo GitHub Spark que dimensiona com as necessidades do aplicativo e elimina a necessidade de gerenciar manualmente a infraestrutura.
+
+* **Spark**: um aplicativo criado usando GitHub Spark. Os Sparks podem variar desde utilitários simples até aplicações web completas e podem ser implantados na internet pública com visibilidade configurável.
+
+* **Edição direcionada**: um recurso do GitHub Spark que permite selecionar um elemento específico no seu aplicativo e fornecer um prompt focado para refinar seu estilo, conteúdo ou comportamento, em vez de aplicar uma alteração global.
+
+## 3. Principais funcionalidades ou capacidades
+
+Os principais recursos e capacidades apresentados aqui descrevem o que os Agentes do GitHub Copilot foram projetados para realizar e como se comportam nas tarefas compatíveis.
+
+* **Feedback automatizado sobre revisão de código**: quando um usuário solicita uma revisão ao Copilot, ele analisa as alterações no código, além de contexto adicional relevante, e fornece feedback sobre o código. Os comentários podem incluir comentários em linguagem natural e sugestões de código específicas vinculadas a linhas e arquivos específicos.
+
+* **Diretrizes de revisão personalizáveis**: a revisão de código do Copilot pode ser personalizada com instruções personalizadas — descrições em linguagem natural do estilo de codificação e das práticas recomendadas — para que o feedback reflita as convenções e os padrões de um repositório.
+
+* **Criação autônoma de pull requests**: o agente de nuvem do Copilot pode obter uma tarefa a partir de uma issue, de um comentário em uma pull request ou do Copilot Chat, criar uma ramificação, gerar alterações de código personalizadas e abrir uma pull request. Depois que a solicitação de pull inicial for criada, o agente poderá iterar com base em seus comentários e avaliações.
+
+* ```
+            **Execução efêmera com firewall**: enquanto trabalha em uma tarefa, o agente de nuvem tem acesso ao seu próprio ambiente de desenvolvimento efêmero, onde pode fazer alterações no código, executar testes automatizados e executar linters. Um firewall é habilitado por padrão para impedir a exfiltração de dados.
+  ```
+
+* **Verificação de segurança automatizada**: durante a geração de código, o agente de nuvem analisa automaticamente o código recém-gerado para vulnerabilidades de segurança usando CodeQL, verificação secreta e análise de dependência e tenta resolver quaisquer problemas antes de serem introduzidos.
+
+* \*\* Integraçõesexterais\*\*: o agente de nuvem pode receber informações e contexto do MCP, como workIQ e Microsoft 365, e aplicativos externos como Microsoft Teams, Linear, Slack e Jira, permitindo que as equipes atribuam tarefas e acompanhem o progresso diretamente em seus fluxos de trabalho existentes.
+
+* **Local agentic execution (Copilot CLI)**: Copilot CLI fornece uma interface semelhante a chat no terminal que pode criar e modificar arquivos de forma autônoma, executar comandos e executar tarefas de várias etapas. Todas as ações têm como escopo o diretório atual e exigem prompts de permissão explícitos antes que o agente modifique arquivos ou execute comandos.
+
+* **Criação de aplicações com linguagem natural (Spark)**: o GitHub Spark oferece um ambiente de desenvolvimento centrado em linguagem natural para criar e implantar aplicações web full-stack sem exigir que os usuários escrevam ou implantem código manualmente. O Spark fornece um ambiente de runtime totalmente gerenciado que é dimensionado com as necessidades do aplicativo.
+
+* **Inference capabilities (Spark)**: o SDK do Spark integra-se nativamente com modelos de GitHub, permitindo que você incorpore a inferência de modelo em seu aplicativo. Se o Spark determinar que seu aplicativo requer recursos de inferência, ele os adicionará usando o SDK do Spark.
+
+## 4. Utilizações pretendidas
+
+Agentes do GitHub Copilot podem ser utilizados em vários cenários, em diversos setores. Alguns exemplos de casos de utilização incluem:
+
+* **Complementando a revisão humana de código**: a revisão de código do Copilot foi projetada para fornecer feedback rapidamente sobre o código de um desenvolvedor, permitindo que os desenvolvedores deixem o código pronto para mesclagem mais rapidamente e aumentando a qualidade geral do código.
+
+* **Manutenção de base** de código: o agente de nuvem pode lidar com correções relacionadas à segurança, atualizações de dependência e refatoração direcionada.
+
+* **Desenvolvimento de** recursos: o agente de nuvem pode implementar solicitações de recursos incrementais, desenvolver conjuntos de testes adicionais e criar ou atualizar a documentação.
+
+* **Prototipando novos projetos**: o agente de nuvem e a CLI Copilot podem criar novos conceitos, ajudando os desenvolvedores a explorar ideias rapidamente.
+
+* **Setting up your environment (CLI)**: Copilot CLI pode executar comandos em seu terminal para configurar seu ambiente local para trabalhar em projetos existentes.
+
+* **Encontrar o comando certo (CLI)**: o Copilot CLI pode sugerir comandos para executar tarefas que você está tentando concluir e explicar comandos desconhecidos em linguagem natural.
+
+* **Criação de aplicativos de IA personalizados (SDK)**: o SDK do Copilot permite que os desenvolvedores criem aplicativos que aproveitam o Copilot para geração de código, interação em linguagem natural e automação de tarefas em seus próprios produtos e fluxos de trabalho.
+
+* **Orquestração de vários agentes (SDK)**: usando agentes personalizados e sub-agentes, os desenvolvedores podem criar fluxos de trabalho sofisticados em que vários agentes especializados colaboram em tarefas complexas, com delegação automática baseada na intenção do usuário.
+
+* **Estendendo aplicativos com ferramentas externas (SDK)**: o suporte ao servidor MCP do SDK permite que os desenvolvedores conectem seus aplicativos a fontes de dados e serviços externos, expandindo o intervalo de tarefas que seus agentes podem executar.
+
+* **Criação e implantação de aplicativos web (Spark)**: você pode usar o GitHub Spark para criar aplicativos web full-stack usando linguagem natural. O ambiente de runtime integrado do Spark permite implantar esses aplicativos na Internet pública com visibilidade configurável com base em permissões de conta GitHub.
+
+* **Criação rápida de protótipos (Spark)**: o Spark ajuda desenvolvedores, designers, gerentes de produto e outros construtores a criar ideias rapidamente sem a necessidade de criar aplicativos do zero ou construir simulações complexas. Os protótipos podem ser implantados para facilitar o compartilhamento ou permanecer não publicados.
+
+## 5. Modelos e dados de preparação
+
+GitHub Copilot Agentes aproveitam uma variedade de modelos de IA para alimentar a experiência que os usuários veem. Para obter uma comparação dos modelos disponíveis para Copilot, consulte [Comparação de modelos de IA](/pt/copilot/reference/ai-models/model-comparison). Para obter a lista completa de modelos com suporte, consulte [Modelos de IA com suporte no GitHub Copilot](/pt/copilot/reference/ai-models/supported-models). Para obter informações sobre onde os modelos estão hospedados, consulte [Hospedagem de modelos para GitHub Copilot](/pt/copilot/reference/ai-models/model-hosting). Para saber mais sobre os dados usados para treinar os modelos fundamentais por trás do GitHub Copilot Agents, consulte a comparação de modelos de IA vinculada acima e [Com quais dados o GitHub Copilot foi treinado?](https://github.com/features/copilot#faq) no FAQ do GitHub Copilot.
+
+A revisão de código do Copilot é um produto desenvolvido especificamente para isso, que usa uma combinação cuidadosamente ajustada de modelos, prompts e comportamentos do sistema para fornecer feedback consistente e de alta qualidade em uma ampla variedade de bases de código. Não há suporte para a alternância de modelos, pois alterar o modelo provavelmente comprometerá a confiabilidade, a experiência do usuário e a qualidade dos feedbacks de revisão. A revisão de código do Copilot pode usar modelos que não estão ativados na página "Modelos" das configurações da sua organização.
+
+O agente de nuvem Copilot usa um modelo de linguagem grande para raciocinar sobre tarefas, gerar código e aproveitar ferramentas em seu ambiente de desenvolvimento efêmero. O agente foi avaliado em uma variedade de linguagens de programação. O inglês é o idioma principal com suporte para prompts e respostas.
+
+Copilot CLI usa um modelo de linguagem grande para raciocinar sobre tarefas, gerar código, modificar arquivos e executar comandos em seu ambiente de terminal local. O agente foi avaliado em uma variedade de linguagens de programação. O inglês é o idioma principal com suporte para prompts e respostas.
+
+O SDK do Copilot se comunica com Copilot CLI por JSON-RPC, usando os mesmos modelos e recursos subjacentes. Os aplicativos criados com o SDK usam os mesmos modelos disponíveis para o usuário ou organização do Copilot autenticado. Os desenvolvedores também podem usar suas próprias chaves de API (BYOK) para usar provedores de modelos personalizados.
+
+GitHub Spark usa um modelo de linguagem grande para alimentar seu agente dentro do ambiente de desenvolvimento. O agente grava código e executa comandos para criar seu aplicativo. O SDK do Spark integra-se nativamente com modelos de GitHub, permitindo que seu aplicativo incorpore recursos de inferência de modelo. Para obter informações sobre os modelos usados por modelos GitHub, consulte [Uso responsável do GitHub Models](/pt/github-models/responsible-use-of-github-models). O Spark não testa os prompts que você cria em seu aplicativo para inferência. Você deve garantir que seus recursos incluídos atuem conforme o esperado.
+
+## 6. Desempenho
+
+### Diferenças por experiência
+
+#### Agente de nuvem do Copilot
+
+O agente de nuvem Copilot funciona usando uma combinação de processamento de linguagem natural e aprendizado de máquina para entender sua tarefa e fazer alterações em uma base de código. Esse processo pode ser dividido em várias etapas:
+
+1. ```
+             **Processamento de prompts**: a tarefa fornecida por meio de um problema, comentário em solicitação de pull ou mensagem do Copilot Chat é combinada com outras informações relevantes e contextuais para formar um prompt. Esse prompt é enviado para um modelo de linguagem grande para processamento. As entradas podem assumir a forma de linguagem natural simples, snippets de código ou imagens.
+   ```
+2. **Análise de modelo de linguagem**: O prompt é processado por um modelo de linguagem de grande porte, que é uma rede neural treinada com um grande volume de dados. O modelo de linguagem analisa o prompt de entrada para ajudar o agente a raciocinar sobre a tarefa e aproveitar as ferramentas necessárias.
+3. **Geração de resposta**: o modelo de linguagem gera uma resposta com base na análise do prompt. Essa resposta pode assumir a forma de sugestões de linguagem natural e sugestões de código.
+4. **Formatação de saída**: depois que o agente concluir sua primeira execução, ele atualizará a descrição da solicitação de pull com as alterações feitas. O agente pode incluir informações complementares sobre recursos que não pôde acessar e fornecer sugestões sobre as etapas a serem resolvidas. Você pode fornecer comentários comentando dentro da solicitação de pull ou mencionando explicitamente o agente (`@copilot`). Em seguida, o agente reenviará os comentários para análise adicional e responderá com as alterações atualizadas.
+
+O agente de nuvem do Copilot foi projetado para fornecer a solução mais relevante para a resolução de tarefas. Mas, nem sempre ele consegue fornecer a resposta que você está procurando. Você é responsável por revisar e validar as respostas geradas por Copilot agente de nuvem para garantir que elas sejam precisas e apropriadas.
+
+#### Revisão de código do Copilot
+
+A revisão de código do Copilot inspeciona seu código e fornece feedback usando uma combinação de processamento de linguagem natural e aprendizado de máquina. Esse processo pode ser dividido em várias etapas:
+
+1. **Processamento de entrada**: as alterações de código são combinadas com outras informações contextuais relevantes (por exemplo, o título e o corpo da solicitação de pull) e as instruções personalizadas que foram definidas, para formar um prompt. Esse prompt é enviado para um modelo de linguagem grande.
+2. **Análise do modelo de linguagem**: O prompt é processado pelo modelo de linguagem do Copilot, que é uma rede neural treinada em um grande volume de dados textuais. O modelo de linguagem analisa o prompt de entrada.
+3. **Geração de resposta**: o modelo de linguagem gera uma resposta com base na análise do prompt de entrada. Essa resposta pode assumir a forma de sugestões de linguagem natural e sugestões de código.
+4. **Formatação da saída**: a resposta é apresentada ao usuário diretamente em um editor compatível ou como uma revisão de pull request no GitHub.com, fornecendo comentários sobre o código vinculados a linhas específicas de arquivos específicos. Quando Copilot forneceu uma sugestão de código, a sugestão é apresentada como uma alteração sugerida, que pode ser aplicada com alguns cliques.
+
+#### CLI do Copilot
+
+Copilot CLI funciona usando uma combinação de processamento de linguagem natural e aprendizado de máquina para entender sua tarefa e fazer alterações em uma base de código. Esse processo pode ser dividido em várias etapas:
+
+1. **Processamento de entrada**: sua entrada é combinada com informações contextuais relevantes para formar um prompt. Esse prompt é enviado para um modelo de linguagem grande para processamento. As entradas podem assumir a forma de linguagem natural simples, snippets de código ou referências a arquivos em seu terminal.
+2. **Análise de modelo de linguagem**: O prompt é processado por um modelo de linguagem de grande porte, que é uma rede neural treinada com um grande volume de dados. O modelo de linguagem analisa o prompt de entrada para ajudar o agente a raciocinar sobre a tarefa e usar as ferramentas necessárias.
+3. **Geração de resposta**: o modelo de linguagem gera uma resposta com base na análise do prompt. Essa resposta pode assumir a forma de sugestões de linguagem natural, sugestões de código, modificações de arquivo e execuções de comando.
+4. **Formatação de saída**: a resposta é formatada e apresentada usando realce de sintaxe, recuo e outros recursos de formatação. O agente também pode executar comandos em seu ambiente local e criar, editar ou excluir arquivos em seu sistema de arquivos para concluir a tarefa. Todas essas ações exigem solicitações explícitas de permissão.
+
+Você pode fornecer comentários ao agente depois que ele retornar uma resposta na janela de chat interativa. O agente reenviará esses comentários para o modelo de idioma para análise adicional e retornará uma resposta adicional.
+
+#### SDK do Copilot
+
+O SDK do Copilot fornece uma interface programática para as capacidades agênticas do Copilot. Os aplicativos criados com o SDK seguem este processo:
+
+1. **Criação de** sessão: o aplicativo cria uma sessão com o SDK, especificando o modelo, o prompt do sistema, as ferramentas disponíveis, os agentes personalizados, os servidores MCP e os ganchos. O SDK estabelece uma conexão JSON-RPC com a CLI Copilot.
+2. **Envio de prompt**: a entrada do usuário é enviada para a sessão. O SDK roteia o prompt (juntamente com o contexto da sessão) para a CLI, que o encaminha para o modelo de linguagem.
+3. **Execução** do agente: o modelo de linguagem explica a tarefa e pode invocar ferramentas, delegar a sub-agentes ou conectar-se a servidores MCP. Os ganchos de ciclo de vida são acionados em cada estágio, permitindo que o aplicativo insira lógica personalizada.
+4. **Transmissão de respostas**: as respostas são transmitidas ao aplicativo, que pode apresentá-las em qualquer formato apropriado para sua interface. O SDK fornece eventos estruturados para texto, chamadas de ferramenta, erros e sinais de conclusão.
+
+#### GitHub Spark
+
+GitHub Spark usa uma abordagem baseada em agente para criar e modificar aplicativos. Esse processo pode ser dividido em várias etapas:
+
+1. **Processamento de entrada**: os comandos de entrada são pré-processados pelo Copilot, enriquecidos com informações contextuais das suas entradas atuais do Spark — incluindo código do seu aplicativo atual, comandos anteriores e quaisquer logs de erro do seu ambiente de desenvolvimento — e enviados a um agente com tecnologia de modelo de linguagem de grande porte no seu ambiente de desenvolvimento. O sistema foi projetado para gerar código com base em prompts enviados e não é capaz de interações de conversação. O inglês é o idioma preferido para os prompts.
+2. **Análise do modelo de linguagem**: o prompt é passado por um modelo de linguagem grande, que é uma rede neural treinada em um grande corpo de dados de texto. O modelo de linguagem analisa o prompt de entrada para ajudar o agente a raciocinar sobre a tarefa e aproveitar as ferramentas necessárias.
+3. **Execução** do agente: o agente é executado em seu ambiente de desenvolvimento, aceitando o prompt e o contexto adicional e decide como atualizar seu aplicativo. O agente pode escrever código, executar comandos e ler saídas de execução. Todas as ações são executadas para garantir um código funcional e preciso. A única saída do agente é o código do aplicativo.
+
+O Spark usa estruturas e SDKs que garantem o design moderno e implantações seguras integradas perfeitamente ao componente de runtime do Spark. A estrutura de design é flexível e modular, permitindo que você modifique o tema para corresponder à aparência desejada. A integração de runtime do Spark usa as melhores práticas para implantações da Web para garantir implantações seguras e escalonáveis.
+
+## 7. Limitações
+
+Entender as limitações dos recursos agênticos do GitHub Copilot é crucial para garantir que sejam usados dentro de limites seguros e eficazes. Embora incentivemos os clientes a aproveitar esses recursos em suas soluções ou aplicativos inovadores, é importante observar que eles não foram projetados para todos os cenários possíveis. Incentivamos os usuários a se referirem a [Termos do GitHub](/pt/site-policy/github-terms) , bem como às seguintes considerações ao escolher um caso de uso:
+
+* **Problemas de qualidade do código não identificados**: Copilot pode não identificar todos os problemas que estão presentes no código, especialmente quando as alterações são grandes ou complexas. Para garantir que todos os problemas relevantes sejam identificados e corrigidos, Copilot revisão de código deve ser complementada com uma revisão cuidadosa do código humano.
+
+* ```
+            **Falsos positivos**: a revisão de código do Copilot apresenta risco de alucinação — ela pode apontar problemas no código revisado que não existem ou que se baseiam em mal-entendidos sobre o código. Os comentários gerados por Copilot revisão de código devem ser cuidadosamente revisados e considerados antes de tomar medidas e fazer alterações.
+  ```
+
+* **Sugestões de código imprecisas ou inseguras**: como parte de seus comentários, a revisão de código do Copilot pode fornecer sugestões de código específicas. O código gerado pode parecer válido, mas pode não estar semanticamente ou sintaticamente correto ou não resolver corretamente o problema identificado no comentário. Além disso, o código gerado por Copilot pode conter vulnerabilidades de segurança ou outros problemas. Você sempre deve examinar e testar cuidadosamente o código gerado pelo Copilot.
+
+* **Possíveis vieses**: os dados de treinamento do Copilot provêm de repositórios de código existentes, que podem conter vieses e erros que a ferramenta pode perpetuar. Além disso, a revisão de código do Copilot pode ser tendenciosa em relação a determinadas linguagens de programação ou estilos de codificação, o que pode levar a feedback abaixo do ideal ou incompleto.
+
+* **Escopo limitado (agente de nuvem)**: o modelo de linguagem usado pelo agente de nuvem foi treinado em um grande corpo de código, mas ainda tem um escopo limitado e pode não ser capaz de lidar com determinadas estruturas de código ou linguagens de programação obscuras. Para cada idioma, a qualidade das sugestões depende do volume e da diversidade dos dados de treinamento para esse idioma.
+
+* **Código impreciso (agente de nuvem)**: o agente de nuvem pode gerar um código que parece ser válido, mas pode não estar realmente semanticamente ou sintaticamente correto, ou pode não refletir com precisão a intenção do desenvolvedor. Você deve examinar e testar cuidadosamente o código gerado, especialmente ao lidar com aplicativos críticos ou confidenciais.
+
+* **Riscos de segurança (agente de nuvem)**: o agente de nuvem gera código e linguagem natural com base no contexto de um problema ou comentário em um repositório, que pode potencialmente expor informações confidenciais ou vulnerabilidades se não for usado com cuidado. Você deve examinar todas as saídas geradas pelo agente completamente antes da mesclagem.
+
+* **Correspondências de código público (agente de nuvem)**: o agente de nuvem pode gerar um código que seja uma correspondência ou uma correspondência próxima do código disponível publicamente, mesmo que a política "Sugestões correspondentes ao código público" esteja definida como "Bloquear". Se isso acontecer, o Copilot mostrará correspondências nos logs de sessão do agente com um link para exibir detalhes do código correspondente.
+
+* **Escopo limitado (CLI)**: O modelo de linguagem usado pelo Copilot CLI foi treinado em uma grande base de código, mas ainda tem um escopo limitado e pode não ser capaz de lidar com determinadas estruturas de código ou linguagens de programação obscuras. Para cada idioma, a qualidade das sugestões depende do volume e da diversidade dos dados de treinamento para esse idioma.
+
+* **Inaccurate code (CLI)**: Copilot CLI pode gerar um código que parece ser válido, mas pode não estar realmente semanticamente ou sintaticamente correto, ou pode não refletir com precisão a intenção do desenvolvedor. Você deve examinar e testar cuidadosamente o código gerado, especialmente ao lidar com aplicativos críticos ou confidenciais.
+
+* **A CLI (riscos de segurança)**: Copilot CLI gera código e linguagem natural com base no contexto do seu ambiente local, o que pode potencialmente expor informações confidenciais ou vulnerabilidades se não for usada com cuidado. Você deve examinar todas as saídas geradas pelo agente minuciosamente.
+
+* **Correspondências com código público (CLI)**: o Copilot CLI pode gerar código que corresponda total ou parcialmente a código disponível publicamente, mesmo que a política "Sugestões que correspondem a código público" esteja definida como "Bloquear".
+
+* **Riscos de execução de comandos (CLI)**: É necessária cautela adicional ao pedir ou permitir que o Copilot CLI execute um comando, especialmente quanto ao potencial destrutivo de alguns comandos sugeridos. Você pode encontrar comandos de exclusão de arquivo ou formatação da unidade de disco rígido que podem causar problemas se usados incorretamente. Em última análise, você é responsável pelos comandos executados pela CLI Copilot.
+
+* **Limitações herdadas (SDK)**: Como o SDK do Copilot se comunica com o Copilot CLI, os aplicativos criados com o SDK herdam as mesmas limitações do modelo, incluindo suporte limitado a determinadas linguagens de programação e a possibilidade de geração de código impreciso ou inseguro.
+
+* **Complexidade do agente personalizado (SDK)**: agentes, ferramentas ou ganchos personalizados configurados incorretamente podem produzir um comportamento inesperado. Os desenvolvedores são responsáveis por testar e validar o comportamento de suas configurações de agente personalizado.
+
+* **SDK (confiança do servidor MCP)**: os servidores MCP conectados por meio do SDK podem expor ferramentas e dados de fontes externas. Os desenvolvedores devem garantir que os servidores MCP conectados sejam confiáveis, pois servidores mal-intencionados ou mal configurados podem introduzir comportamento prejudicial ou expor dados confidenciais.
+
+* **Variação de modelo BYOK (SDK)**: Ao usar configurações de traga sua própria chave com provedores de modelos de terceiros, o comportamento pode diferir dos modelos hospedados no GitHub. Os desenvolvedores são responsáveis por avaliar a segurança e a qualidade das respostas de seu provedor escolhido.
+
+* **Interpretação da intenção do usuário (Spark)**: o Spark nem sempre está correto em sua interpretação de sua intenção. Você sempre deve usar a versão prévia fornecida pelo Spark para confirmar o comportamento preciso em seu aplicativo.
+
+* **Escopo limitado (Spark)**: o Spark foi treinado em um grande conjunto de códigos e aplicativos relevantes, mas pode ter dificuldades com aplicativos complexos ou verdadeiramente novos. O Spark tem o melhor desempenho em cenários de aplicativos comuns e pessoais (por exemplo, ferramentas de produtividade, auxílios de aprendizagem, utilitários de gerenciamento de vida) e quando a instrução de idioma natural é fornecida em inglês.
+
+* **Correspondências de código público (Spark)**: o Spark pode gerar código que seja uma correspondência ou uma correspondência próxima do código disponível publicamente, mesmo que a política "Sugestões correspondentes ao código público" esteja definida como "Bloquear". Se isso acontecer, Copilot não fornecerá referências de código apontando para a fonte original do código.
+
+* **Limitações de segurança (Spark)**: embora o runtime do Spark siga as práticas recomendadas para implantação de aplicativos, ele gera código probabilisticamente, o que pode potencialmente introduzir vulnerabilidades especialmente se essas vulnerabilidades forem comuns no conjunto de treinamento. Você deve ter cuidado ao criar aplicativos que gerenciem dados pessoais ou confidenciais e sempre examinar e testar o aplicativo gerado minuciosamente.
+
+## 8. Avaliações
+
+<!-- Do not modify this text.-->
+
+As avaliações de desempenho e segurança avaliam se as aplicações de IA estão a funcionar de forma fiável e segura ao examinar fatores como a fundamentação, a relevância e a coerência, ao mesmo tempo que identificam os riscos de gerar conteúdo prejudicial. As avaliações a seguir foram realizadas com componentes de segurança já em vigor, que também são descritos em [9. Componentes de segurança e mitigações](#9-safety-components-and-mitigations).
+
+### Avaliações de desempenho e qualidade
+
+Os GitHub Copilot Agents são avaliados em todas as interfaces compatíveis por meio de uma combinação de benchmarks padrão do setor (por exemplo, SWE-Bench) e conjuntos de avaliação desenvolvidos internamente. As tarefas de benchmark são originárias de repositórios públicos de software livre e cenários sintéticos; não são usadas consultas de usuário reais ou código do cliente. Cada avaliação inclui várias execuções independentes para considerar o não determinismo nas saídas do modelo. As principais métricas incluem taxa de resolução (percentual de tarefas concluídas com êxito), eficiência do token, latência e confiabilidade de chamada de ferramenta. Os modelos são reavaliados quando as atualizações são feitas e monitoradas continuamente na produção por meio de taxas de erro, latência de resposta e padrões de uso agregados.
+
+### Métodos de avaliação de desempenho e qualidade
+
+Novos modelos para GitHub Copilot Agents passam por um processo de avaliação em etapas antes da implantação. As equipes de integração executam conjuntos de testes de benchmark específicos para sua área de atuação, testando o modelo em tarefas de programação representativas, como correções de bugs, geração de código e refatoração de vários arquivos. Os resultados são revisados em relação às linhas de base estabelecidas e aos modelos de produção existentes. Os modelos devem atingir ou superar o desempenho de referência em métricas-chave, como taxa de resolução, eficiência no uso de tokens e latência, antes de avançarem para a próxima etapa. Um comitê de revisão multifuncional toma uma decisão formal de prosseguir/não prosseguir antes de qualquer modelo ser aprovado para implantação voltada ao usuário.
+
+### Avaliações de risco e segurança
+
+<!-- Do not modify this text.-->
+
+A avaliação de potenciais riscos associados ao conteúdo gerado pela IA é essencial para salvaguardar os riscos de conteúdo com diferentes graus de gravidade. Isto inclui avaliar a predisposição de uma aplicação de IA para gerar conteúdo prejudicial ou testar vulnerabilidades para ataques de jailbreak. Para GitHub, realizamos avaliações de desempenho, incluindo aquelas adaptadas para fins de codificação de [Microsoft Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/evaluation-evaluators/risk-safety-evaluators):
+
+* Ódio e injustiça
+* Sexual
+* Violência
+* Automutilação
+* Material protegido
+* Desbloqueio
+* Vulnerabilidade de código
+
+### Dados de avaliação para qualidade e segurança
+
+<!-- Do not modify this text.-->
+
+Os nossos dados de avaliação são personalizados para avaliar o desempenho da aplicação de IA em áreas-chave de **segurança** e **qualidade**, simulando cenários e riscos do mundo real. Começamos identificando aspectos de avaliação relevantes de preocupação com base em pesquisas multidisciplinares e na contribuição de especialistas. Essas questões são traduzidas em objetivos de avaliação direcionados e orientam a formulação das métricas de avaliação. Para **segurança**, criamos prompts adversários para elicitar respostas indesejáveis ou em casos extremos, os quais são avaliados por avaliadores assistidos por IA treinados para verificar a conformidade com os padrões do GitHub. Em **qualidade**, criamos prompts com base em rubricas relevantes para cenários como a avaliação de aplicações e agentes de geração aumentada por recuperação (RAG). Os conjuntos de dados são coletados de diversas fontes, incluindo conjuntos de dados sintéticos e públicos para simular cenários de usuários reais. Usando os conjuntos de dados coletados, ambas as avaliações passam por refinamento iterativo e alinhamento humano para melhorar a eficácia e a confiabilidade da métrica. Essa metodologia forma a base de avaliações repetíveis e rigorosas que refletem como os clientes usam avaliações para criar uma IA melhor.
+
+### Avaliações personalizadas
+
+Os recursos baseados em agentes do Copilot foram submetidos à equipe vermelha de RAI para identificar e mitigar possíveis riscos. Continuamos monitorando a eficácia e a segurança desses recursos ao longo do tempo. Para obter mais informações, consulte [Microsoft AI Red Team criando o futuro da IA mais segura](https://www.microsoft.com/en-us/security/blog/2023/08/07/microsoft-ai-red-team-building-future-of-safer-ai/) no blog de segurança do Microsoft.
+
+## 9. Componentes de segurança e mitigações
+
+### Agente de nuvem do Copilot
+
+* **Controles de escalonamento** de privilégios: o agente de nuvem responde apenas às interações dos usuários com acesso de gravação do repositório. Os fluxos de trabalho de ações disparados por solicitações de pull geradas pelo agente exigem aprovação de um usuário com acesso de gravação antes de serem executados. O agente filtra caracteres ocultos que podem permitir que os usuários ocultem instruções prejudiciais em comentários ou emitem conteúdo.
+* **Permissões restritas**: o agente de nuvem só tem acesso ao repositório em que está criando uma solicitação de pull e não pode acessar outros repositórios. Eles só podem fazer push para uma única ramificação: a ramificação da solicitação de pull existente quando acionada por meio de `@copilot` ou uma nova ramificação `copilot/`. Isso significa que o Copilot não pode fazer push diretamente para o branch padrão (por exemplo, `main`). O agente não tem acesso a segredos da organização ou do repositório actions. Somente segredos e variáveis adicionados especificamente ao `copilot` ambiente são passados para o agente.
+* ```
+            **Garantir a rastreabilidade**: os commits do agente de nuvem são criados pelo Copilot, com a pessoa que iniciou a tarefa marcada como coautora. Isso facilita a identificação do código gerado pelo agente e quem iniciou a tarefa. As confirmações do agente de nuvem são assinadas, portanto, elas aparecem como "Verificadas" em GitHub. Isso fornece confiança de que as confirmações foram feitas por GitHub Copilot agente de nuvem e não foram alteradas. Cada mensagem de confirmação inclui um link para os logs de sessão do agente. Isso fornece um link permanente de qualquer commit criado pelo agente aos logs de sessão completos, para que você possa entender por que o Copilot fez uma alteração durante a revisão de código ou rastreá-la posteriormente para fins de auditoria.
+  ```
+* **Firewall para prevenção de exfiltração de dados**: por padrão, o agente de nuvem tem um firewall habilitado para impedir a exfiltração de código ou outros dados confidenciais, acidentalmente ou devido à entrada mal-intencionada do usuário.
+* **Detecção automatizada de vulnerabilidades de segurança**: durante a geração de código, o agente de nuvem analisa automaticamente o código recém-gerado para vulnerabilidades de segurança e tenta resolvê-los. A análise é executada usando CodeQL (para identificar possíveis vulnerabilidades e erros), verificação secreta (para garantir que segredos não sejam introduzidos) e análise de dependência (para verificar se há vulnerabilidades conhecidas em dependências referenciadas).
+
+### CLI do Copilot
+
+* **Acesso no escopo do diretório**: Por padrão, o Copilot CLI só tem acesso a arquivos e pastas no diretório a partir do qual foi invocado e em seus subdiretórios. Se o agente quiser acessar arquivos fora do diretório atual, ele solicitará permissão.
+* **Solicitações de permissão para modificar arquivos**: Copilot CLI solicita permissão antes de modificar arquivos. Você deve garantir que ele esteja modificando os arquivos corretos antes de conceder permissão.
+* **Solicitações de permissão para execução de comandos**: O Copilot CLI solicita permissão antes de executar comandos que podem ser perigosos. Você deve examinar esses comandos cuidadosamente antes de conceder permissão para execução.
+* **Configurable permissions**: você pode conceder permissões específicas à CLI Copilot, ou todas as permissões, usando as várias opções de linha de comando: por exemplo, `--allow-tool=[TOOLS...]`, `--allow-all-tools`, `--allow-all` (ou seu comando de barra equivalente `/allow-all` para uso em uma sessão interativa). Para obter mais informações, consulte [referência de comando da CLI GitHub Copilot](/pt/copilot/reference/copilot-cli-reference/cli-command-reference#command-line-options). Normalmente, ao usar Copilot CLI no modo de piloto automático, você concederá permissões completas para permitir que ela conclua uma tarefa de forma autônoma, sem exigir que você aprove a atividade enquanto ela funciona na tarefa. Para obter mais informações, consulte [Permitindo que GitHub Copilot CLI funcione de forma autônoma](/pt/copilot/concepts/agents/copilot-cli/autopilot).
+* **As considerações sobre segurança**: para obter mais informações sobre práticas de segurança ao usar Copilot CLI, consulte [Sobre GitHub Copilot CLI](/pt/copilot/concepts/agents/about-copilot-cli#security-considerations).
+
+### SDK do Copilot
+
+* **Controles de segurança herdados da CLI**: O SDK do Copilot se comunica com o Copilot CLI, herdando seu modelo de permissões e controles de segurança. Execuções de ferramentas e modificações de arquivo ainda exigem permissões apropriadas.
+* **Supervisão baseada em hooks**: os hooks de ciclo de vida do SDK (como `onPreToolUse` e `onPostToolUse`) permitem que os desenvolvedores implementem verificações de segurança personalizadas, registros de auditoria e fluxos de aprovação antes e depois da execução da ferramenta.
+* **Isolamento do servidor MCP**: os servidores MCP são executados como processos separados. Os desenvolvedores podem controlar quais servidores estão disponíveis por sessão, limitando o escopo do acesso à ferramenta externa.
+* **Escopo da sessão**: cada sessão do SDK é isolada e tem seu próprio contexto, ferramentas e permissões. Os desenvolvedores podem controlar quais dados e recursos estão disponíveis em cada sessão.
+* **Responsabilidade do BYOK**: Ao usar configurações de traga sua própria chave, solicitações e respostas são enviadas diretamente ao provedor configurado. Os desenvolvedores são responsáveis por revisar as políticas de tratamento de dados do provedor escolhido.
+
+### aplicativo GitHub Copilot
+
+O aplicativo GitHub Copilot é um aplicativo para desktop para gerenciar sessões de agente entre repositórios locais, worktrees do Git e sandboxes na nuvem. O aplicativo usa CLI do GitHub Copilot e SDK do GitHub Copilot como base e adiciona uma interface de usuário para sessões paralelas, chats rápidos, fluxos de trabalho de solicitações de pull e problemas de GitHub, automações e telas.
+
+* ```
+            **Isolamento do workspace**: as sessões do aplicativo podem ser executadas em árvores de trabalho do git ou áreas restritas de nuvem separadas, ajudando a isolar tarefas simultâneas umas das outras e da ramificação padrão.
+  ```
+* **Controles de segurança herdados da CLI e do SDK**: as sessões de aplicativo usam CLI do GitHub Copilot e SDK do GitHub Copilot, portanto, herdam as mesmas limitações de modelo e controles de segurança para acesso a arquivos, modificação de arquivo, execução de comando, escopo de sessão e ferramentas conectadas.
+* **Revisão humana antes da mesclagem**: o aplicativo apresenta alterações geradas, status da solicitação pull, resultados de CI, atividade de revisão e histórico de sessão para que os usuários possam inspecionar o trabalho antes de enviar revisões, habilitar a mesclagem do agente ou mesclar solicitações de pull.
+* **Integrações configuráveis e automações: os usuários** controlam quais servidores MCP, habilidades, extensões de tela e automações estão disponíveis no aplicativo. Essas configurações devem ser revisadas antes do uso porque podem afetar as ferramentas, os dados e as ações em segundo plano disponíveis para as sessões.
+
+### Tratamento de dados ao usar seu próprio provedor de modelo (CLI)
+
+Quando você configura Copilot CLI para usar seu próprio provedor de modelos, seus prompts, contexto de código e respostas geradas são enviados diretamente para o provedor configurado. Eles não são encaminhados pelo GitHub. Você é responsável por revisar e cumprir os termos de serviço e as políticas de tratamento de dados do provedor escolhido.
+
+#### Telemetry
+
+Quando você usa seu próprio provedor de modelos sem modo offline, Copilot CLI continua a enviar telemetria para GitHub como de costume. Essa telemetria não inclui seus prompts ou código, mas inclui metadados de uso.
+
+Se você habilitar o modo offline definindo a `COPILOT_OFFLINE` variável de ambiente como `true`, toda a telemetria será desabilitada. No modo offline, Copilot CLI faz apenas solicitações de rede para seu provedor de modelo configurado.
+
+#### Autenticação e disponibilidade de recursos
+
+GitHub autenticação não é necessária ao usar seu próprio provedor de modelos (BYOK). Sem GitHub autenticação, os seguintes recursos não estão disponíveis:
+
+* `/delegate`, que transfere a sessão para o Copilot no servidor do GitHub
+* O servidor MCP GitHub
+* Pesquisa de Código GitHub
+
+No modo offline, ferramentas baseadas na Web, como `web_fetch` e pesquisa de código GitHub, também estão desabilitadas.
+
+#### Sem alternativa para modelos hospedados no GitHub
+
+Se a configuração do provedor de modelos for inválida, Copilot CLI sairá com um erro. Ele não recorre a modelos hospedados no GitHub. Falhas comuns, como conexão recusada, erros de autenticação, modelo não encontrado e tempos limite, produzem mensagens amigáveis com diretrizes acionáveis.
+
+### GitHub Spark
+
+* **Proteções de conteúdo**: o Spark tem proteções internas contra conteúdo nocivo, odioso ou ofensivo.
+* **Denúncia de conteúdo**: você pode denunciar conteúdo problemático ou ofensivo por meio do feedback ou denunciar um spark por abuso ou spam. Exemplos de conteúdo ofensivo devem ser denunciados a <copilot-safety@github.com> junto com a URL do spark.
+* **Runtime seguro**: a integração de runtime do Spark usa as práticas recomendadas para implantações da Web para garantir implantações seguras e escalonáveis.
+
+## 10. Práticas recomendadas para implantar e adotar recursos agênticos do GitHub Copilot
+
+A IA responsável é um compromisso compartilhado entre GitHub e seus clientes. Embora GitHub crie aplicativos de IA com segurança, imparcialidade e transparência no núcleo, os clientes desempenham um papel fundamental na implantação e no uso dessas tecnologias de forma responsável dentro de seus próprios contextos. Para apoiar esta parceria, oferecemos as seguintes melhores práticas para implementadores e utilizadores finais para ajudar os clientes a implementar a IA responsável de forma eficaz.
+
+* **Tenha cuidado e avalie os resultados ao usar os recursos agênticos do Copilot para decisões importantes ou em domínios sensíveis**: <!-- Do not modify this text.-->
+  As decisões conseqüentes são aquelas que podem ter um impacto legal ou significativo no acesso de uma pessoa à educação, emprego, plataformas financeiras, benefícios governamentais, saúde, moradia, seguro, plataformas legais, ou que podem resultar em danos físicos, psicológicos ou financeiros. Domínios confidenciais, como plataformas financeiras, saúde e moradia, exigem cuidados específicos devido ao potencial de impacto desproporcional em diferentes grupos de pessoas. Ao utilizar a IA para decisões nestas áreas, certifique-se de que os intervenientes afetados conseguem compreender como as decisões são tomadas, tomar decisões de recurso e atualizar quaisquer dados de entrada relevantes.
+
+* **Avalie as considerações legais e regulatórias**: <!-- Do not modify this text.-->
+  Os clientes precisam avaliar possíveis obrigações legais e regulatórias específicas ao usar quaisquer plataformas e soluções de IA, que podem não ser apropriadas para uso em todos os setores ou cenários. Além disso, as plataformas ou soluções de IA não são projetadas e podem não ser usadas de maneiras proibidas em termos de serviço aplicáveis e códigos de conduta relevantes.
+
+* **Exercite a supervisão humana quando apropriado**: a supervisão humana é uma proteção importante ao interagir com aplicativos de IA. Embora melhoremos continuamente nossos aplicativos de IA, a IA ainda pode cometer erros. As saídas geradas podem ser imprecisas, incompletas, tendenciosas, desalinhadas ou irrelevantes para os objetivos pretendidos. Isto pode acontecer devido a várias razões, como ambiguidade nas entradas ou limitações dos modelos subjacentes. Dessa forma, os usuários devem revisar as respostas geradas pelos recursos agênticos do Copilot e verificar se elas correspondem às suas expectativas e requisitos.
+
+* **Esteja ciente do risco de dependência excessiva**: <!-- Do not modify this text.-->
+  A dependência excessiva da IA ocorre quando os usuários aceitam saídas de IA incorretas ou incompletas, principalmente porque erros em saídas de IA podem ser difíceis de detectar. Para o utilizador final, a sobre-confiança pode resultar numa diminuição da produtividade, perda de confiança, abandono de aplicações, perda financeira, danos psicológicos, danos físicos, entre outros. (por exemplo, um médico aceita uma saída de IA incorreta).
+
+* **Tenha cuidado ao criar IA agente em domínios confidenciais**: <!-- Do not modify this text.-->
+  Os usuários devem ter cuidado ao projetar e/ou implantar aplicativos de IA agente em domínios confidenciais em que as ações do agente são irreversíveis ou altamente conseqüentes. Precauções adicionais também devem ser tomadas ao criar IA agente autônoma, conforme descrito mais adiante no [Termos do GitHub](/pt/site-policy/github-terms).
+
+* **Use a revisão de código do Copilot para complementar as revisões humanas, não para substituí-las**: Embora a revisão de código do Copilot possa ser uma ferramenta poderosa para melhorar a qualidade do código, é importante usá-la como apoio, e não como substituta das revisões humanas. Você sempre deve examinar e verificar os comentários gerados por Copilot revisão de código e complementar os comentários de Copilot com uma revisão humana cuidadosa para garantir que seu código atenda às suas necessidades.
+
+* **Envie comentários**: Se você encontrar algum problema ou limitação na revisão de código do Copilot, recomendamos que envie feedback usando os botões de polegar para cima e polegar para baixo nos comentários do Copilot. Isso pode ajudar GitHub melhorar a ferramenta e resolver quaisquer preocupações ou limitações.
+
+* **Configurações personalizadas**: você pode configurar instruções personalizadas para ajudar Copilot entender seu estilo de codificação e melhores práticas, melhorando a relevância e a qualidade dos comentários de revisão.
+
+* **Verifique se as tarefas do agente de nuvem estão bem no escopo**: quanto mais claro e bem definido o prompt que você atribuir ao agente de nuvem, melhores serão os resultados. Um problema ideal inclui uma descrição clara do problema, critérios de aceitação completos e dicas sobre quais arquivos precisam ser alterados.
+
+* **Personalize o agente de nuvem com contexto adicional**: o agente de nuvem tem acesso à pesquisa semântica de código, o que o ajuda a encontrar código relevante com base no significado, em vez de apenas correspondências de texto exatas, permitindo que ele conclua tarefas mais rapidamente. Para aprimorar ainda mais o desempenho, implemente instruções Copilot personalizadas para ajudar o agente a entender melhor seu projeto e como criar, testar e validar suas alterações.
+
+* **Use o agente de nuvem como uma ferramenta, não uma substituição**: você sempre deve examinar e testar o conteúdo gerado pelo agente de nuvem para garantir que ele atenda aos seus requisitos e esteja livre de erros ou preocupações de segurança antes da mesclagem.
+
+* **Use práticas seguras de codificação e revisão de código com o agente de nuvem**: embora o agente de nuvem possa gerar código sintaticamente correto, ele pode nem sempre ser seguro. Siga as práticas recomendadas para codificação segura e revisão de código. Tome as mesmas precauções que tomaria com qualquer código que use material que não tenha sido criado originalmente por você, incluindo testes rigorosos, verificação de propriedade intelectual e verificação de vulnerabilidades de segurança.
+
+* **Mantenha-se atualizado**: o agente de nuvem é uma tecnologia em evolução. Mantenha-se atualizado com quaisquer novos riscos de segurança ou práticas recomendadas que possam surgir.
+
+* **Use Copilot CLI como uma ferramenta, não uma substituição**: você sempre deve examinar e verificar comandos e código gerados pela CLI Copilot para garantir que eles atendam aos seus requisitos e estejam livres de erros ou preocupações de segurança.
+
+* **Revise os comandos antes da execução (CLI)**: tenha cuidado especial quando o Copilot CLI sugerir executar comandos, especialmente aqueles que modificam ou excluem arquivos. Em última análise, você é responsável pelos comandos que permite que o agente execute.
+
+* **Mantenha as tarefas da CLI bem delimitadas**: quanto mais claro e bem delimitado for o prompt que você fornecer, melhores serão os resultados. Inclua uma descrição clara do problema, critérios de aceitação e dicas sobre quais arquivos precisam ser alterados.
+
+* **Provide feedback (CLI)**: se você encontrar problemas ou limitações com Copilot CLI, forneça comentários usando o comando `/feedback`.
+
+* **Validar o comportamento do agente personalizado (SDK)**: teste minuciosamente agentes personalizados, ferramentas e ganchos antes de implantar aplicativos criados com o SDK para produção. Verifique se as configurações de ferramenta e os prompts do sistema produzem um comportamento seguro e esperado.
+
+* **Auditar conexões de servidor MCP (SDK)**: conecte-se somente aos servidores MCP em que você confia. Examine as ferramentas e os dados expostos por cada servidor e verifique se eles estão alinhados com os requisitos de segurança do aplicativo.
+
+* ```
+            **Implementar ganchos de segurança (SDK)**: use os ganchos de ciclo de vida do SDK para implementar proteções, como filtragem de conteúdo, registro em log de auditoria e fluxos de trabalho de aprovação de ferramentas em seus aplicativos.
+  ```
+
+* **Defina o escopo das sessões adequadamente (SDK)**: configure cada sessão do SDK apenas com as ferramentas, agentes e permissões necessárias para a tarefa em questão. Evite conceder acesso amplo quando um escopo mais restrito for suficiente.
+
+* **Examine as políticas de provedor BYOK (SDK)**: se estiver usando configurações bring-your-own-key, verifique se os termos de serviço e as políticas de tratamento de dados do provedor de modelo escolhido atendem aos requisitos da sua organização.
+
+* **Mantenha os prompts do Spark específicos e sobre o tópico**: quanto mais específico você puder ser sobre os comportamentos e interações pretendidos, melhor será a saída. A incorporação de contexto relevante, como cenários específicos, simulações ou especificações, ajudará o Spark a entender sua intenção. O Spark usa o contexto de prompts anteriores, portanto prompts sem relação com o assunto podem prejudicar o desempenho nas revisões subsequentes.
+
+* **Use edições direcionadas no Spark**: as edições direcionadas permitem que você especifique elementos em seu aplicativo para refinamento focado. Usar edições direcionadas quando possível, em vez de prompts globais, resultará em alterações mais precisas e menos efeitos colaterais.
+
+* **Verifique a saída do Spark**: sempre use a visualização de aplicativo fornecida pelo Spark para verificar se seu aplicativo se comporta conforme o esperado em diferentes cenários. Se você estiver familiarizado com o código, examine o código gerado para garantir que ele atenda aos seus padrões de qualidade.
+
+* **Garanta que os recursos de inferência funcionem conforme o esperado (Spark)**: se o seu aplicativo Spark usa recursos de inferência por meio do SDK do GitHub Models, você é responsável por testar os prompts que você cria para garantir que eles produzam resultados apropriados.
+
+## 11. Saiba mais sobre os recursos agênticos do GitHub Copilot
+
+Para obter orientações adicionais sobre o uso responsável dos recursos agênticos do Copilot, recomendamos consultar a seguinte documentação:
+
+* [Usando o GitHub Copilot para revisão de código](/pt/copilot/using-github-copilot/code-review/using-copilot-code-review)
+* [Práticas recomendadas para usar GitHub Copilot para trabalhar em tarefas](/pt/copilot/tutorials/coding-agent/best-practices)
+* [Configurar o ambiente de desenvolvimento](/pt/copilot/customizing-copilot/customizing-the-development-environment-for-copilot-coding-agent)
+* [Personalizando ou desabilitando o firewall para o agente de nuvem do GitHub Copilot](/pt/copilot/customizing-copilot/customizing-or-disabling-the-firewall-for-copilot-coding-agent)
+* [Crie seu primeiro aplicativo com tecnologia do Copilot](/pt/copilot/how-tos/copilot-sdk/sdk-getting-started)
+* [Configurar servidores MCP para seu repositório](/pt/copilot/using-github-copilot/coding-agent/extending-copilot-coding-agent-with-mcp)
+* [Sobre GitHub Copilot CLI](/pt/copilot/concepts/agents/about-copilot-cli)
+* [Sobre a aplicativo Copilot do GitHub](/pt/copilot/concepts/agents/github-copilot-app)
+* [Sua primeira faísca](/pt/copilot/tutorials/building-your-first-app-in-minutes-with-github-spark)
+* [Compilando e implantando aplicativos habilitados para IA com GitHub Spark](/pt/copilot/tutorials/building-ai-app-prototypes)
+* [Faturamento do GitHub Spark](/pt/copilot/concepts/copilot-billing/about-billing-for-github-spark)
+* [Uso responsável do GitHub Models](/pt/github-models/responsible-use-of-github-models)
+* [Termos de licença de pré-lançamento do GitHub](/pt/site-policy/github-terms/github-pre-release-license-terms)
+* [Termos do GitHub para produtos e recursos adicionais](/pt/site-policy/github-terms/github-terms-for-additional-products-and-features#github-copilot)
+* [Central de Confiabilidade do Copilot](https://copilot.github.trust.page/)
+
+### Saiba mais sobre IA responsável
+
+* [Princípios de IA da Microsoft](https://www.microsoft.com/en-us/ai/responsible-ai)
+* [Recursos de IA responsável da Microsoft](https://www.microsoft.com/en-us/ai/responsible-ai-resources)
+* [Cursos do Microsoft Azure Learning sobre IA responsável](https://docs.microsoft.com/en-us/learn/paths/responsible-ai-business-principles/)
